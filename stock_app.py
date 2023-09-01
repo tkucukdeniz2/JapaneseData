@@ -12,13 +12,18 @@ def fetch_recent_shares_outstanding(ticker_symbol):
     shares_outstanding = ticker_obj.info['sharesOutstanding']
     return shares_outstanding
 
+def fetch_recent_market_cap(ticker_symbol):
+    ticker_obj = yf.Ticker(ticker_symbol)
+    return ticker_obj.info.get('marketCap', None)  # Use .get() method with a default value
+
+
 def fetch_all_data(stocks, start_date):
     with pd.ExcelWriter('stock_data.xlsx', engine='openpyxl') as writer:
         for stock_name, ticker_symbol in stocks:
             data = fetch_stock_data(ticker_symbol, start_date)
-            shares_outstanding = fetch_recent_shares_outstanding(ticker_symbol)
-            if shares_outstanding is not None:
-                data['Market Cap'] = data['Close'] * shares_outstanding
+            market_cap = fetch_recent_market_cap(ticker_symbol)
+            if market_cap is not None:
+                data['Market Cap'] = market_cap
             data.to_excel(writer, sheet_name=stock_name)
     return 'stock_data.xlsx'
 
