@@ -7,6 +7,11 @@ def fetch_stock_data(ticker_symbol, start_date=None):
     stock_data = yf.download(ticker_symbol, start=start_date)
     return stock_data
 
+def fetch_market_cap(ticker_symbol):
+    ticker_obj = yf.Ticker(ticker_symbol)
+    market_cap = ticker_obj.info['marketCap']
+    return market_cap
+
 # Sample list of Japanese stocks
 stocks = [
     ("Toyota", "7203.T"),
@@ -24,7 +29,7 @@ stocks = [
 stock_name_to_symbol = {name: symbol for name, symbol in stocks}
 
 st.title("Japanese Stock Data Fetcher")
-st.subheader("by tkdeniz")  # Add this line for the subheading
+st.subheader("by tkdeniz")
 
 selected_stock = st.selectbox("Select a stock:", [name for name, _ in stocks])
 start_date = st.date_input("Select a start date:")
@@ -32,6 +37,9 @@ start_date = st.date_input("Select a start date:")
 if st.button("Fetch Data"):
     ticker = stock_name_to_symbol[selected_stock]
     data = fetch_stock_data(ticker, start_date)
+    market_cap = fetch_market_cap(ticker)
+    
+    st.write(f"Market Capitalization: ${market_cap:,.2f}")
     st.write(data)
 
     # Convert DataFrame to Excel and create download link
