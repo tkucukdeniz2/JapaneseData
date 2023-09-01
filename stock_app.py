@@ -5,12 +5,12 @@ import io
 
 def fetch_stock_data(ticker_symbol, start_date=None):
     stock_data = yf.download(ticker_symbol, start=start_date)
-    return stock_data[['Close']]  # Only fetch the 'Close' column
+    return stock_data
 
-def fetch_recent_shares_outstanding(ticker_symbol):
+def fetch_market_cap(ticker_symbol):
     ticker_obj = yf.Ticker(ticker_symbol)
-    shares_outstanding = ticker_obj.info['sharesOutstanding']
-    return shares_outstanding
+    market_cap = ticker_obj.info['marketCap']
+    return market_cap
 
 # List of Japanese and Korean gaming companies
 stocks = [
@@ -49,10 +49,10 @@ start_date = st.date_input("Select a start date:")
 if st.button("Fetch Data"):
     ticker = stock_name_to_symbol[selected_stock]
     data = fetch_stock_data(ticker, start_date)
+    market_cap = fetch_market_cap(ticker)
     
-    # Approximate daily market cap
-    shares_outstanding = fetch_recent_shares_outstanding(ticker)
-    data['Market Cap'] = data['Close'] * shares_outstanding
+    st.write(f"Market Capitalization: ${market_cap:,.2f}")
+    st.write(data)
     
     # Display only 'Date', 'Close', and 'Market Cap'
     st.write(data)
