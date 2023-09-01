@@ -56,7 +56,12 @@ selected_stock = st.selectbox("Select a stock:", [name for name, _ in stocks])
 start_date = st.date_input("Select a start date:")
 
 if st.button("Fetch Data"):
+    loading_message = st.empty()
+    loading_message.text('Fetching data... Please wait.')
+    
     file_path = fetch_all_data(stocks, start_date)
+
+    loading_message.text('Data fetched successfully!')
     
     with open(file_path, 'rb') as f:
         excel_bytes = f.read()
