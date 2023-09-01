@@ -34,14 +34,6 @@ def fetch_all_data(stocks, start_date):
             if market_cap is not None:
                 data['Market Cap'] = market_cap
             data.to_excel(writer, sheet_name=stock_name)
-            
-            # Auto-size columns for the current sheet
-            ws = writer.sheets[stock_name]
-            auto_size_columns(ws)
-        
-        # Ensure the first sheet is visible
-        first_sheet_name = stocks[0][0]
-        writer.sheets[first_sheet_name].sheet_state = 'visible'
     return 'stock_data.xlsx'
 
 # List of Japanese and Korean gaming companies
