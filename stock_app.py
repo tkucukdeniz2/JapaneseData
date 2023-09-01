@@ -7,10 +7,10 @@ def fetch_stock_data(ticker_symbol, start_date=None):
     stock_data = yf.download(ticker_symbol, start=start_date)
     return stock_data
 
-def fetch_market_cap(ticker_symbol):
+def fetch_recent_shares_outstanding(ticker_symbol):
     ticker_obj = yf.Ticker(ticker_symbol)
-    market_cap = ticker_obj.info['marketCap']
-    return market_cap
+    shares_outstanding = ticker_obj.info['sharesOutstanding']
+    return shares_outstanding
 
 # Sample list of Japanese stocks
 stocks = [
@@ -37,9 +37,10 @@ start_date = st.date_input("Select a start date:")
 if st.button("Fetch Data"):
     ticker = stock_name_to_symbol[selected_stock]
     data = fetch_stock_data(ticker, start_date)
-    market_cap = fetch_market_cap(ticker)
     
-    st.write(f"Market Capitalization: ${market_cap:,.2f}")
+    # Approximate daily market cap
+    shares_outstanding = fetch_recent_shares_outstanding(ticker)
+    data['Market Cap'] = data['Close'] * shares_outstanding
     st.write(data)
 
     # Convert DataFrame to Excel and create download link
