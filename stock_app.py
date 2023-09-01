@@ -5,14 +5,14 @@ import io
 
 def fetch_stock_data(ticker_symbol, start_date=None):
     stock_data = yf.download(ticker_symbol, start=start_date)
-    return stock_data
+    return stock_data[['Close']]  # Only fetch the 'Close' column
 
 def fetch_recent_shares_outstanding(ticker_symbol):
     ticker_obj = yf.Ticker(ticker_symbol)
     shares_outstanding = ticker_obj.info['sharesOutstanding']
     return shares_outstanding
 
-# Sample list of Japanese stocks
+# List of Japanese and Korean gaming companies
 stocks = [
     ("Toyota", "7203.T"),
     ("Sony", "6758.T"),
@@ -23,12 +23,24 @@ stocks = [
     ("Capcom", "9697.T"),
     ("Konami", "9766.T"),
     ("Sega", "6460.T"),
-    ("Koei Tecmo", "3635.T")
+    ("Koei Tecmo", "3635.T"),
+    ("Nexon", "3659.T"),
+    ("Netmarble", "251270.KS"),
+    ("NCSoft", "036570.KS"),
+    ("Kakao Games", "293490.KS"),
+    ("CyberAgent", "4751.T"),
+    ("GungHo Online", "3765.T"),
+    ("Dena", "2432.T"),
+    ("Mixi", "2121.T"),
+    ("Pearl Abyss", "263750.KS"),
+    ("Com2uS", "078340.KS"),
+    ("Webzen", "069080.KS"),
+    ("Smilegate", "141080.KS")
 ]
 
 stock_name_to_symbol = {name: symbol for name, symbol in stocks}
 
-st.title("Japanese Stock Data Fetcher")
+st.title("Japanese & Korean Gaming Stock Data Fetcher")
 st.subheader("by tkdeniz")
 
 selected_stock = st.selectbox("Select a stock:", [name for name, _ in stocks])
@@ -41,7 +53,19 @@ if st.button("Fetch Data"):
     # Approximate daily market cap
     shares_outstanding = fetch_recent_shares_outstanding(ticker)
     data['Market Cap'] = data['Close'] * shares_outstanding
+    
+    # Display only 'Date', 'Close', and 'Market Cap'
     st.write(data)
+
+    # Convert DataFrame to CSV and create download link
+    csv = data.to_csv(index=True)
+    csv_bytes = csv.encode()
+    st.download_button(
+        label="Download CSV",
+        data=csv_bytes,
+        file_name=f"{selected_stock}_data.csv",
+        mime="text/csv"
+    )
 
     # Convert DataFrame to Excel and create download link
     excel_bytes = io.BytesIO()
