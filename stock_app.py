@@ -5,7 +5,7 @@ import io
 
 def fetch_stock_data(ticker_symbol, start_date=None):
     stock_data = yf.download(ticker_symbol, start=start_date)
-    return stock_data
+    return stock_data[['Close']]  # Only fetch the 'Close' column
 
 def fetch_market_cap(ticker_symbol):
     ticker_obj = yf.Ticker(ticker_symbol)
