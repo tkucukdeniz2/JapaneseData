@@ -12,6 +12,16 @@ def fetch_recent_shares_outstanding(ticker_symbol):
     shares_outstanding = ticker_obj.info['sharesOutstanding']
     return shares_outstanding
 
+def fetch_all_data(stocks, start_date):
+    with pd.ExcelWriter('stock_data.xlsx', engine='openpyxl') as writer:
+        for stock_name, ticker_symbol in stocks:
+            data = fetch_stock_data(ticker_symbol, start_date)
+            shares_outstanding = fetch_recent_shares_outstanding(ticker_symbol)
+            if shares_outstanding is not None:
+                data['Market Cap'] = data['Close'] * shares_outstanding
+            data.to_excel(writer, sheet_name=stock_name)
+    return 'stock_data.xlsx'
+
 # List of Japanese and Korean gaming companies
 stocks = [
     ("Toyota", "7203.T"),
@@ -47,23 +57,14 @@ selected_stock = st.selectbox("Select a stock:", [name for name, _ in stocks])
 start_date = st.date_input("Select a start date:")
 
 if st.button("Fetch Data"):
-    ticker = stock_name_to_symbol[selected_stock]
-    data = fetch_stock_data(ticker, start_date)
+    file_path = fetch_all_data(stocks, start_date)
     
-    # Approximate daily market cap
-    shares_outstanding = fetch_recent_shares_outstanding(ticker)
-    data['Market Cap'] = data['Close'] * shares_outstanding
+    with open(file_path, 'rb') as f:
+        excel_bytes = f.read()
     
-    # Display only 'Date', 'Close', and 'Market Cap'
-    st.write(data)
-
-    # Convert DataFrame to Excel and create download link
-    excel_bytes = io.BytesIO()
-    data.to_excel(excel_bytes, index=True, engine='openpyxl')
-    excel_bytes.seek(0)
     st.download_button(
         label="Download Excel",
         data=excel_bytes,
-        file_name=f"{selected_stock}_data.xlsx",
+        file_name="all_stock_data.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
