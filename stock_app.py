@@ -57,16 +57,6 @@ if st.button("Fetch Data"):
     # Display only 'Date', 'Close', and 'Market Cap'
     st.write(data)
 
-    # Convert DataFrame to CSV and create download link
-    csv = data.to_csv(index=True)
-    csv_bytes = csv.encode()
-    st.download_button(
-        label="Download CSV",
-        data=csv_bytes,
-        file_name=f"{selected_stock}_data.csv",
-        mime="text/csv"
-    )
-
     # Convert DataFrame to Excel and create download link
     excel_bytes = io.BytesIO()
     data.to_excel(excel_bytes, index=True, engine='openpyxl')
